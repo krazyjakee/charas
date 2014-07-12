@@ -1,0 +1,35 @@
+- var charasetsSection=['medium','tall','little','soldiers','monsters','monstersThin','fat','isometric','dwarf'];
+- var charasetsSubSection=['body', 'face', 'attire', 'hair', 'items'];
+- var premadeSection=['charasets','facesets','battlechar'];
+- var pageTitle="Charas Maker";
+
+.navbar.navbar-default
+  .navbar-header
+    .navbar-brand=pageTitle
+  .pull-right.navbar-form
+      button.btn.btn-primary(data-click="goToLink", data-url="sorter") Sorter
+
+#resources.col-sm-6
+  ul.nav.nav-tabs
+    - each section, index in charasetsSection
+      li(class=index == 0 ? "active" : "")
+        a(data-toggle="tab", href="#"+section)=section
+  .tab-content
+    - each section, index in charasetsSection
+      .tab-pane(class=index == 0 ? "active" : "", id=section, data-section=section)
+        h4=section
+        ul.nav.nav-tabs
+          - each subSection, index in charasetsSubSection
+            li(class=index == 0 ? "active" : "")
+              a(data-toggle="tab", href="#"+section+"-"+subSection)=subSection
+        .tab-content
+          - each subSection, index in charasetsSubSection
+            .tab-pane(class=index == 0 ? "active" : "", id=section+"-"+subSection, data-section=section+"-"+subSection)
+              h4=subSection
+              .resources
+#viewer.col-sm-6
+  h4 Viewer
+  .well
+    #charas
+
+require maker

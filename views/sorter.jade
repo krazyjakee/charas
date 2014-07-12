@@ -1,0 +1,56 @@
+- var charasetsSection=['medium','tall','little','soldiers','monsters','monstersThin','fat','isometric','dwarf'];
+- var charasetsSubSection=['body', 'face', 'attire', 'hair', 'items'];
+- var premadeSection=['charasets','facesets','battlechar'];
+- var pageTitle="Charas Sorting Machine";
+
+.navbar.navbar-default
+  .navbar-header
+    .navbar-brand=pageTitle
+  .pull-right.navbar-form
+    button.btn.btn-primary(data-click="goToLink", data-url="maker") Maker
+.navbar
+  .navbar-form.pull-left
+    button.btn.btn-default(data-click="Uncategorised.getNext") Load More
+  .navbar-form.pull-right
+    button.btn.btn-primary(data-click="Categorised.save") Commit
+.overflow
+  .col-sm-6
+    #infScrContainer
+    #infinite-scroll.sortable
+  #categorised.col-sm-6
+    .well
+      h1.nomar Trash
+      .sortable(data-category="trash")
+    #accordion.panel-group
+      .panel.panel-primary      
+        .panel.panel-heading
+          h4.panel-title
+            a(data-toggle="collapse", data-parent="#accordion", href="#collapse1") Generator
+          #collapse1.panel-collapse.collapse
+            .panel-body
+              ul.nav.nav-tabs
+                - each section, index in charasetsSection
+                  li(class=index == 0 ? "active" : "")
+                    a(data-toggle="tab", href="#"+section)=section
+              .tab-content
+                - each section, index in charasetsSection
+                  .tab-pane(class=index == 0 ? "active" : "", id=section, data-section="paperdoll")
+                    h4=section
+                    - each subSection in charasetsSubSection
+                      .panel.panel-default
+                        .panel-heading
+                          .panel-title=subSection
+                        .panel-body
+                          .sortable(data-category=section+"-"+subSection)
+      .panel.panel-primary                            
+        .panel.panel-heading
+          h4.panel-title
+            a(data-toggle="collapse", data-parent="#accordion", href="#collapse2") Premade
+          #collapse2.panel-collapse.collapse
+            .panel-body
+              .tab-content
+                - each section in premadeSection
+                  h4=section
+                  .sortable(data-category="premade-"+section)
+
+require sorter
