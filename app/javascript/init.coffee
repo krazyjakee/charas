@@ -1,3 +1,9 @@
+###
+serverless jade templating with angularjs
+remove loading js per page
+create per view js objects
+###
+
 @scaleUpImage = (sender, viewer = false) ->
   scale = 2
 
