@@ -52,4 +52,4 @@ changePage = (where) ->
     $('#container').html jade.compile(e)()
     globalInit()
 
-changePage('maker')
+changePage('sorter')

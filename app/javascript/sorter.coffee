@@ -23,7 +23,8 @@ window.Uncategorised =
         infs.append("<canvas id=\"canvas-#{j.id}\"></canvas>")
         index = imgs.length
         imgs[index] = new Image()
-        imgs[index].src = "resources/#{j.location}"
+        imgs[index].crossOrigin = "anonymous"
+        imgs[index].src = "http://mistarcane.com/charas/resources/#{j.location}"
         imgs[index].id = j.id
         imgs[index].onload = ->
           scaleUpImage(@)

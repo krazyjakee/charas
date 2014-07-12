@@ -9,8 +9,6 @@ showResources = ->
   $.getJSON "http://mistarcane.com/charas/api.php?mode=query&category=#{category}&subcategory=#{subcategory}", (json) ->
     imgs = []
     for j in json
-      resourceDiv = $('#'+category+'-'+subcategory+' .resources')
-      resourceDiv.append("<canvas id=\"canvas-#{j.id}\" data-location='#{j.location}' data-click='selectResource'></canvas>")
       index = "canvas-#{j.id}"
       imgs[index] = new Image()
       imgs[index].src = "resources/#{j.location}"
