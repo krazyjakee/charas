@@ -1,12 +1,12 @@
 @Sorter = ($scope, $http) ->
 
   $scope.init = ->
-    infScr = $('#infinite-scroll')
 
     $('.nav-tabs').tab()
     $('.sortable').sortable
       connectWith: ".sortable"
 
+    infScr = $('#infinite-scroll')
     infScrTop = infScr.offset().top
     $(window).scroll ->
       scrTop = $(window).scrollTop()
@@ -14,18 +14,18 @@
         infScr.css('margin-top', (scrTop - infScrTop) + 10)
       else
         infScr.css('margin-top', 0)
-
     $scope.next()
 
+  $scope.sorterImages = []
+  $scope.pageCount = 0
+
   $scope.next = (e, sender, callback = false) ->
-    pageCount = 0
-    url = 'http://mistarcane.com/charas/api.php?mode=query&category=all&subcategory=all&page='+pageCount
-    $.getJSON url, (json) ->
+    url = 'http://mistarcane.com/charas/api.php?mode=query&category=all&subcategory=all&page='+$scope.pageCount
+    $http.get(url).success (json) ->
+      json = eval(json)
+      $scope.sorterImages = $scope.sorterImages.concat json
       imgs = []
-      for j in json
-        infs = $('#infinite-scroll')
-        infs.append("<canvas data-alphaHash=\"#{j.alphaHash}\" data-size=\"#{j.width}x#{j.height}\" id=\"canvas-#{j.id}\"></canvas>")
-        index = imgs.length
+      for j, index in json
         imgs[index] = new Image()
         imgs[index].crossOrigin = "anonymous"
         imgs[index].src = "http://mistarcane.com/charas/resources/#{j.location}"
@@ -33,7 +33,7 @@
         imgs[index].onload = ->
           scaleUpImage(@)
       callback() if callback
-      pageCount++
+      $scope.pageCount++
     $scope.calcTotals()
 
   $scope.commit = ->
@@ -50,7 +50,8 @@
           categories[cat[0]][cat[1]] = ids
     post = $http.post('http://mistarcane.com/charas/api.php?mode=set', 'json='+JSON.stringify(categories))
     .success (res) ->
-      $('#infinite-scroll, .sortable').empty()
+      $scope.pageCount = 0
+      $scope.sorterImages = []
       $scope.next()
 
   $scope.calcTotals = ->
@@ -58,6 +59,9 @@
       $scope.sorterTotal = res.total
       $scope.sorterProgress = res.sorted
       $scope.sorterPercentage = (100 / res.total) * res.sorted
+
+  $scope.graphicPreview = ->
+    $('#graphicPreview').modal('show')
 
   $scope.$on '$routeChangeSuccess', $scope.init
 

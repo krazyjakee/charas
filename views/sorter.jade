@@ -18,8 +18,8 @@ div(ng-controller="Sorter")
       button.btn.btn-primary(ng-click="commit()") Commit
   .overflow
     .col-sm-6
-      #infScrContainer
       #infinite-scroll.sortable
+        canvas(id="canvas-{{item.id}}", data-alphaHash="{{item.alphaHash}}", data-size="{{item.width}}x{{item.height}", ng-dblclick="graphicPreview()", ng-repeat="item in sorterImages")
     #categorised.col-sm-6
       .well
         h1.nomar Trash
@@ -55,3 +55,16 @@ div(ng-controller="Sorter")
                   - each section in premadeSection
                     h4=section
                     .sortable(data-category="premade-"+section)
+
+#graphicPreview.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(data-dismiss="modal",type="button")
+          span &times;
+          span.sr-only close
+        h4.modal-title Preview
+      .modal-body
+        .col-sm-3(ng-repeat="body in bodies")
+      .modal-footer
+        button.btn.btn-default(data-dismiss="modal") Close
