@@ -14,12 +14,13 @@ div(ng-controller="Sorter")
   .navbar
     .navbar-form.pull-left
       button.btn.btn-default(ng-click="next()") Load More
+      button.btn.btn-default(ng-click="next($event)", data-random="1") Load Random
     .navbar-form.pull-right
       button.btn.btn-primary(ng-click="commit()") Commit
   .overflow
     .col-sm-6
       #infinite-scroll.sortable
-        canvas(id="canvas-{{item.id}}", data-alphaHash="{{item.alphaHash}}", data-size="{{item.width}}x{{item.height}", ng-dblclick="graphicPreview()", ng-repeat="item in sorterImages")
+        canvas(id="canvas-{{item.id}}", data-alphaHash="{{item.alphaHash}}", data-location="{{item.location}}", data-size="{{item.width}}x{{item.height}}", ng-dblclick="graphicPreview()", ng-repeat="item in sorterImages")
     #categorised.col-sm-6
       .well
         h1.nomar Trash
@@ -56,15 +57,18 @@ div(ng-controller="Sorter")
                     h4=section
                     .sortable(data-category="premade-"+section)
 
-#graphicPreview.modal.fade
-  .modal-dialog
-    .modal-content
-      .modal-header
-        button.close(data-dismiss="modal",type="button")
-          span &times;
-          span.sr-only close
-        h4.modal-title Preview
-      .modal-body
-        .col-sm-3(ng-repeat="body in bodies")
-      .modal-footer
-        button.btn.btn-default(data-dismiss="modal") Close
+  #graphicPreview.modal.fade
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(data-dismiss="modal",type="button")
+            span &times;
+            span.sr-only close
+          h4.modal-title Preview
+        .modal-body
+          .row
+            .col-sm-3.relative(ng-repeat="body in previewBodies")
+              canvas.absolute(class="previewcanvas-{{selectedResource}}")
+              canvas(class="previewcanvas-{{body.id}}")
+        .modal-footer
+          button.btn.btn-default(data-dismiss="modal") Close

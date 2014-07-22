@@ -1,5 +1,6 @@
 @Sorter = ($scope, $http) ->
 
+  $scope.resourceUrl = resourceUrl
   $scope.init = ->
 
     $('.nav-tabs').tab()
@@ -15,24 +16,22 @@
       else
         infScr.css('margin-top', 0)
     $scope.next()
+    $http.get(resourceUrl + 'api.php?mode=bodies').success (res) ->
+      $scope.previewBodies = eval(res)
+      scaleUpImages($scope.previewBodies, '.preview')
 
   $scope.sorterImages = []
   $scope.pageCount = 0
 
-  $scope.next = (e, sender, callback = false) ->
-    url = 'http://mistarcane.com/charas/api.php?mode=query&category=all&subcategory=all&page='+$scope.pageCount
-    $http.get(url).success (json) ->
+  $scope.next = (e) ->
+    random = ""
+    if e
+      random = "&random=1" if $(e.target).attr('data-random')
+    $scope.calcTotals()
+    $http.get("#{resourceUrl}api.php?mode=query&category=all&subcategory=all&page=#{$scope.pageCount}#{random}").success (json) ->
       json = eval(json)
       $scope.sorterImages = $scope.sorterImages.concat json
-      imgs = []
-      for j, index in json
-        imgs[index] = new Image()
-        imgs[index].crossOrigin = "anonymous"
-        imgs[index].src = "http://mistarcane.com/charas/resources/#{j.location}"
-        imgs[index].id = "canvas-#{j.id}"
-        imgs[index].onload = ->
-          scaleUpImage(@)
-      callback() if callback
+      scaleUpImages(json)
       $scope.pageCount++
     $scope.calcTotals()
 
@@ -48,20 +47,23 @@
         else
           categories[cat[0]] = {} unless categories[cat[0]]
           categories[cat[0]][cat[1]] = ids
-    post = $http.post('http://mistarcane.com/charas/api.php?mode=set', 'json='+JSON.stringify(categories))
+    post = $http.post(resourceUrl + 'api.php?mode=set', 'json='+JSON.stringify(categories))
     .success (res) ->
       $scope.pageCount = 0
       $scope.sorterImages = []
       $scope.next()
 
   $scope.calcTotals = ->
-    $http.get('http://mistarcane.com/charas/api.php?mode=stats').success (res) ->
+    $http.get(resourceUrl + 'api.php?mode=stats').success (res) ->
       $scope.sorterTotal = res.total
       $scope.sorterProgress = res.sorted
       $scope.sorterPercentage = (100 / res.total) * res.sorted
 
   $scope.graphicPreview = ->
     $('#graphicPreview').modal('show')
+    $scope.selectedResource = @item.id
+    scaleUpImages([@item], '.preview')
+    false
 
   $scope.$on '$routeChangeSuccess', $scope.init
 
@@ -79,12 +81,12 @@
         subcategory = $('#'+category+' .nav-tabs li.active a').html()
         imgLoadCount = 0
 
-        $.getJSON "http://mistarcane.com/charas/api.php?mode=query&category=#{category}&subcategory=#{subcategory}", (json) ->
+        $.getJSON resourceUrl + "api.php?mode=query&category=#{category}&subcategory=#{subcategory}", (json) ->
           $scope.imgs = imgs = {}
           for j in json
             index = "canvas-#{j.id}"
             imgs[index] = new Image()
-            imgs[index].src = "http://mistarcane.com/charas/resources/#{j.location}"
+            imgs[index].src = resourceUrl + "resources/#{j.location}"
             imgs[index].id = index
             imgs[index].crossOrigin = "anonymous"
             imgs[index].onload = ->
