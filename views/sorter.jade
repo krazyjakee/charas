@@ -9,6 +9,8 @@ div(ng-controller="Sorter")
       .navbar-brand=pageTitle
     .pull-right.navbar-form
       a.btn.btn-primary(href="#maker") Maker
+  .progress
+    .progress-bar(style="width: {{sorterPercentage}}%;") {{sorterProgress}}/{{sorterTotal}}
   .navbar
     .navbar-form.pull-left
       button.btn.btn-default(ng-click="next()") Load More

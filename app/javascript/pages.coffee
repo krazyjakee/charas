@@ -1,4 +1,5 @@
-@Sorter = ($scope) ->
+@Sorter = ($scope, $http) ->
+
   $scope.init = ->
     infScr = $('#infinite-scroll')
 
@@ -14,6 +15,8 @@
       else
         infScr.css('margin-top', 0)
 
+    $scope.next()
+
   $scope.next = (e, sender, callback = false) ->
     pageCount = 0
     url = 'http://mistarcane.com/charas/api.php?mode=query&category=all&subcategory=all&page='+pageCount
@@ -21,7 +24,7 @@
       imgs = []
       for j in json
         infs = $('#infinite-scroll')
-        infs.append("<canvas id=\"canvas-#{j.id}\"></canvas>")
+        infs.append("<canvas data-alphaHash=\"#{j.alphaHash}\" data-size=\"#{j.width}x#{j.height}\" id=\"canvas-#{j.id}\"></canvas>")
         index = imgs.length
         imgs[index] = new Image()
         imgs[index].crossOrigin = "anonymous"
@@ -31,6 +34,7 @@
           scaleUpImage(@)
       callback() if callback
       pageCount++
+    $scope.calcTotals()
 
   $scope.commit = ->
     categories = {}
@@ -44,13 +48,16 @@
         else
           categories[cat[0]] = {} unless categories[cat[0]]
           categories[cat[0]][cat[1]] = ids
-    $.ajax
-      url: 'http://mistarcane.com/charas/api.php?mode=set'
-      type: 'POST'
-      data: 'json='+JSON.stringify(categories)
-      success: (res) ->
-        $('#infinite-scroll, .sortable').empty()
-        $scope.next()
+    post = $http.post('http://mistarcane.com/charas/api.php?mode=set', 'json='+JSON.stringify(categories))
+    .success (res) ->
+      $('#infinite-scroll, .sortable').empty()
+      $scope.next()
+
+  $scope.calcTotals = ->
+    $http.get('http://mistarcane.com/charas/api.php?mode=stats').success (res) ->
+      $scope.sorterTotal = res.total
+      $scope.sorterProgress = res.sorted
+      $scope.sorterPercentage = (100 / res.total) * res.sorted
 
   $scope.$on '$routeChangeSuccess', $scope.init
 

@@ -42,7 +42,9 @@ $('.angular-template').each (index, elem) ->
 
 initAngular = ->
   app = angular.module 'charas', ['ngRoute']
-  app.config ($routeProvider) ->
+  app.config ['$routeProvider', '$httpProvider', ($routeProvider, $httpProvider) ->
+    $httpProvider.defaults.headers.post = {'Content-Type': 'application/x-www-form-urlencoded'}
+
     $routeProvider.when '/sorter',
       templateUrl: 'sorter.jade'
     .when '/maker',
@@ -50,6 +52,7 @@ initAngular = ->
     .otherwise
       redirectTo: '/sorter'
     return
+  ]
 
   angular.bootstrap document, ['charas']
 
